@@ -1,6 +1,6 @@
 ﻿namespace MusicPlayer
 {
-    partial class Form1
+    partial class app
     {
         /// <summary>
         /// Required designer variable.
@@ -28,9 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(app));
             this.files = new System.Windows.Forms.RichTextBox();
             this.play = new System.Windows.Forms.Button();
-            this.pause = new System.Windows.Forms.Button();
+            this.stp = new System.Windows.Forms.Button();
             this.next = new System.Windows.Forms.Button();
             this.previous = new System.Windows.Forms.Button();
             this.filename = new System.Windows.Forms.Label();
@@ -43,6 +45,8 @@
             this.decreaseVolume = new System.Windows.Forms.Button();
             this.status = new System.Windows.Forms.Label();
             this.copyright = new System.Windows.Forms.Label();
+            this.ps = new System.Windows.Forms.Button();
+            this.notifiIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
             // 
             // files
@@ -52,6 +56,7 @@
             this.files.Size = new System.Drawing.Size(652, 419);
             this.files.TabIndex = 0;
             this.files.Text = "";
+            this.files.TextChanged += new System.EventHandler(this.files_TextChanged);
             // 
             // play
             // 
@@ -63,32 +68,35 @@
             this.play.UseVisualStyleBackColor = true;
             this.play.Click += new System.EventHandler(this.play_Click);
             // 
-            // pause
+            // stp
             // 
-            this.pause.Location = new System.Drawing.Point(672, 49);
-            this.pause.Name = "pause";
-            this.pause.Size = new System.Drawing.Size(179, 30);
-            this.pause.TabIndex = 2;
-            this.pause.Text = "Stop";
-            this.pause.UseVisualStyleBackColor = true;
+            this.stp.Location = new System.Drawing.Point(672, 49);
+            this.stp.Name = "stp";
+            this.stp.Size = new System.Drawing.Size(179, 30);
+            this.stp.TabIndex = 2;
+            this.stp.Text = "Stop";
+            this.stp.UseVisualStyleBackColor = true;
+            this.stp.Click += new System.EventHandler(this.stop_Click);
             // 
             // next
             // 
-            this.next.Location = new System.Drawing.Point(672, 85);
+            this.next.Location = new System.Drawing.Point(761, 121);
             this.next.Name = "next";
-            this.next.Size = new System.Drawing.Size(179, 30);
+            this.next.Size = new System.Drawing.Size(90, 30);
             this.next.TabIndex = 3;
             this.next.Text = "Next";
             this.next.UseVisualStyleBackColor = true;
+            this.next.Click += new System.EventHandler(this.next_Click);
             // 
             // previous
             // 
-            this.previous.Location = new System.Drawing.Point(672, 121);
+            this.previous.Location = new System.Drawing.Point(671, 121);
             this.previous.Name = "previous";
-            this.previous.Size = new System.Drawing.Size(179, 30);
+            this.previous.Size = new System.Drawing.Size(91, 30);
             this.previous.TabIndex = 4;
             this.previous.Text = "Previous";
             this.previous.UseVisualStyleBackColor = true;
+            this.previous.Click += new System.EventHandler(this.previous_Click);
             // 
             // filename
             // 
@@ -96,9 +104,9 @@
             this.filename.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.filename.Location = new System.Drawing.Point(671, 154);
             this.filename.Name = "filename";
-            this.filename.Size = new System.Drawing.Size(77, 20);
+            this.filename.Size = new System.Drawing.Size(17, 20);
             this.filename.TabIndex = 5;
-            this.filename.Text = "Filename";
+            this.filename.Text = "..";
             // 
             // loop
             // 
@@ -107,7 +115,6 @@
             this.loop.Name = "loop";
             this.loop.Size = new System.Drawing.Size(61, 21);
             this.loop.TabIndex = 6;
-            this.loop.TabStop = true;
             this.loop.Text = "Loop";
             this.loop.UseVisualStyleBackColor = true;
             // 
@@ -118,13 +125,13 @@
             this.loopAll.Name = "loopAll";
             this.loopAll.Size = new System.Drawing.Size(79, 21);
             this.loopAll.TabIndex = 7;
-            this.loopAll.TabStop = true;
             this.loopAll.Text = "Loop all";
             this.loopAll.UseVisualStyleBackColor = true;
             // 
             // playOnce
             // 
             this.playOnce.AutoSize = true;
+            this.playOnce.Checked = true;
             this.playOnce.Location = new System.Drawing.Point(675, 391);
             this.playOnce.Name = "playOnce";
             this.playOnce.Size = new System.Drawing.Size(91, 21);
@@ -173,7 +180,7 @@
             // 
             this.status.AutoSize = true;
             this.status.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F);
-            this.status.Location = new System.Drawing.Point(671, 178);
+            this.status.Location = new System.Drawing.Point(671, 174);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(73, 20);
             this.status.TabIndex = 13;
@@ -183,17 +190,35 @@
             // 
             this.copyright.AutoSize = true;
             this.copyright.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F);
-            this.copyright.Location = new System.Drawing.Point(720, 415);
+            this.copyright.Location = new System.Drawing.Point(668, 415);
             this.copyright.Name = "copyright";
             this.copyright.Size = new System.Drawing.Size(131, 20);
             this.copyright.TabIndex = 14;
             this.copyright.Text = "Copyright YANG";
             // 
-            // Form1
+            // ps
+            // 
+            this.ps.Location = new System.Drawing.Point(672, 85);
+            this.ps.Name = "ps";
+            this.ps.Size = new System.Drawing.Size(179, 30);
+            this.ps.TabIndex = 15;
+            this.ps.Text = "Pause";
+            this.ps.UseVisualStyleBackColor = true;
+            this.ps.Click += new System.EventHandler(this.pause_click);
+            // 
+            // notifiIcon
+            // 
+            this.notifiIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifiIcon.Icon")));
+            this.notifiIcon.Text = "My Music Player";
+            this.notifiIcon.Visible = true;
+            this.notifiIcon.Click += new System.EventHandler(this.notifiIcon_Click);
+            // 
+            // app
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(863, 444);
+            this.Controls.Add(this.ps);
             this.Controls.Add(this.copyright);
             this.Controls.Add(this.status);
             this.Controls.Add(this.decreaseVolume);
@@ -206,11 +231,14 @@
             this.Controls.Add(this.filename);
             this.Controls.Add(this.previous);
             this.Controls.Add(this.next);
-            this.Controls.Add(this.pause);
+            this.Controls.Add(this.stp);
             this.Controls.Add(this.play);
             this.Controls.Add(this.files);
-            this.Name = "Form1";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.Name = "app";
             this.Text = "My Music Player";
+            this.Resize += new System.EventHandler(this.app_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -220,7 +248,6 @@
 
         private System.Windows.Forms.RichTextBox files;
         private System.Windows.Forms.Button play;
-        private System.Windows.Forms.Button pause;
         private System.Windows.Forms.Button next;
         private System.Windows.Forms.Button previous;
         private System.Windows.Forms.Label filename;
@@ -233,6 +260,9 @@
         private System.Windows.Forms.Button decreaseVolume;
         private System.Windows.Forms.Label status;
         private System.Windows.Forms.Label copyright;
+        private System.Windows.Forms.Button ps;
+        private System.Windows.Forms.Button stp;
+        private System.Windows.Forms.NotifyIcon notifiIcon;
     }
 }
 
