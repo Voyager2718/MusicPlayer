@@ -176,7 +176,6 @@ namespace MusicPlayer
 
         private void files_TextChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Changed");
             loadPlaylist();
         }
 
@@ -192,11 +191,12 @@ namespace MusicPlayer
                 minimizedToSystemTray = true;
                 this.ShowInTaskbar = false;
                 this.Hide();
+                this.notifiIcon.Text = "Click to restore window";
             }
         }
 
-        //Show the minimized window.
-        private void backToNormalState()
+        //Restore windows
+        private void restoreWindow()
         {
             minimizedToSystemTray = false;
             this.Show();
@@ -210,7 +210,7 @@ namespace MusicPlayer
 
         private void notifiIcon_Click(object sender, EventArgs e)
         {
-            backToNormalState();
+            restoreWindow();
         }
     }
 }
