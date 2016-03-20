@@ -47,13 +47,15 @@
             this.copyright = new System.Windows.Forms.Label();
             this.ps = new System.Windows.Forms.Button();
             this.notifiIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.command = new System.Windows.Forms.TextBox();
+            this.launch = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // files
             // 
             this.files.Location = new System.Drawing.Point(13, 13);
             this.files.Name = "files";
-            this.files.Size = new System.Drawing.Size(652, 419);
+            this.files.Size = new System.Drawing.Size(652, 387);
             this.files.TabIndex = 0;
             this.files.Text = "";
             this.files.TextChanged += new System.EventHandler(this.files_TextChanged);
@@ -215,12 +217,32 @@
             this.notifiIcon.Visible = true;
             this.notifiIcon.Click += new System.EventHandler(this.notifiIcon_Click);
             // 
+            // command
+            // 
+            this.command.Location = new System.Drawing.Point(13, 410);
+            this.command.Name = "command";
+            this.command.Size = new System.Drawing.Size(568, 22);
+            this.command.TabIndex = 16;
+            this.command.KeyDown += new System.Windows.Forms.KeyEventHandler(this.command_KeyDown);
+            // 
+            // launch
+            // 
+            this.launch.Location = new System.Drawing.Point(587, 406);
+            this.launch.Name = "launch";
+            this.launch.Size = new System.Drawing.Size(75, 30);
+            this.launch.TabIndex = 17;
+            this.launch.Text = "Launch";
+            this.launch.UseVisualStyleBackColor = true;
+            this.launch.Click += new System.EventHandler(this.launch_Click);
+            // 
             // app
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(863, 444);
+            this.Controls.Add(this.launch);
+            this.Controls.Add(this.command);
             this.Controls.Add(this.ps);
             this.Controls.Add(this.copyright);
             this.Controls.Add(this.status);
@@ -269,6 +291,8 @@
         private System.Windows.Forms.Button ps;
         private System.Windows.Forms.Button stp;
         private System.Windows.Forms.NotifyIcon notifiIcon;
+        private System.Windows.Forms.TextBox command;
+        private System.Windows.Forms.Button launch;
     }
 }
 

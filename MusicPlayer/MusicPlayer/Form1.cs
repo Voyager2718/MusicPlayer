@@ -143,6 +143,8 @@ namespace MusicPlayer
                 Play(loop.Checked);
                 playing = true;
                 setFilename();
+                ps.Text = "Pause";
+                paused = false;
             }
             catch (NullReferenceException) { }
         }
@@ -278,6 +280,24 @@ namespace MusicPlayer
         private void decreaseVolume_Click(object sender, EventArgs e)
         {
             setVolume(musicVolume - 5);
+        }
+
+        private void interpreter(string cmd)
+        {
+            if (cmd == "exit")
+                System.Environment.Exit(0);
+            mciSendString(command.Text, null, 0, IntPtr.Zero);
+        }
+
+        private void launch_Click(object sender, EventArgs e)
+        {
+            interpreter(command.Text);
+        }
+
+        private void command_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                interpreter(command.Text);
         }
     }
 }
