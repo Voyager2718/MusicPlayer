@@ -236,6 +236,7 @@
             this.Controls.Add(this.play);
             this.Controls.Add(this.files);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "app";
             this.Text = "My Music Player";
