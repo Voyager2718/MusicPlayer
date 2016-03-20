@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicPlayer", "MusicPlayer\MusicPlayer.csproj", "{30046AC7-CF50-4285-831E-330745F7006B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicPlayer", "MusicPlayer\MusicPlayer.csproj", "{E0297A46-07F9-443A-9C5B-0EECDBD76D34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{30046AC7-CF50-4285-831E-330745F7006B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30046AC7-CF50-4285-831E-330745F7006B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30046AC7-CF50-4285-831E-330745F7006B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30046AC7-CF50-4285-831E-330745F7006B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0297A46-07F9-443A-9C5B-0EECDBD76D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0297A46-07F9-443A-9C5B-0EECDBD76D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0297A46-07F9-443A-9C5B-0EECDBD76D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0297A46-07F9-443A-9C5B-0EECDBD76D34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
