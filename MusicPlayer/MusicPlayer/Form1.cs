@@ -58,6 +58,8 @@ namespace MusicPlayer
         private void Stop()
         {
             status.Text = "Waiting..";
+            paused = false;
+            ps.Text = "Pause";
 
             _command = "close MediaFile";
             mciSendString(_command, null, 0, IntPtr.Zero);
@@ -231,6 +233,7 @@ namespace MusicPlayer
         private void writeBufferToFile()
         {
             System.IO.File.WriteAllText(@".\userconfig.conf", writeBuffer);
+            writeBuffer = "";
         }
 
         private string readFile(string path)
