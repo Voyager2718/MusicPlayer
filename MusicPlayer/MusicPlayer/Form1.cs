@@ -38,6 +38,14 @@ namespace MusicPlayer
             this.DragDrop += new DragEventHandler(app_DragDrop);
             files.Text = readFile(@".\userconfig.conf");
             loadPlaylist();
+            notifiIcon.ContextMenu = new ContextMenu(new MenuItem[] { 
+                new MenuItem("Exit", exit),
+            });
+        }
+
+        private void exit(object sender, EventArgs e)
+        {
+            System.Environment.Exit(0);
         }
 
         private void Open(string sFileName)
