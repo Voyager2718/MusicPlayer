@@ -215,6 +215,7 @@
             // 
             // app
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(863, 444);
@@ -238,6 +239,8 @@
             this.MaximizeBox = false;
             this.Name = "app";
             this.Text = "My Music Player";
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.app_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.app_DragEnter);
             this.Resize += new System.EventHandler(this.app_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();

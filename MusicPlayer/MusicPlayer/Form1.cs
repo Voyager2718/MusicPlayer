@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -38,6 +32,8 @@ namespace MusicPlayer
         public app()
         {
             InitializeComponent();
+            //this.DragEnter += new DragEventHandler(app_DragEnter);
+            this.DragDrop += new DragEventHandler(app_DragDrop);
         }
 
         private void Open(string sFileName)
@@ -211,6 +207,23 @@ namespace MusicPlayer
         private void notifiIcon_Click(object sender, EventArgs e)
         {
             restoreWindow();
+        }
+
+        //Weird bug. If I drop anything here, this function will be called 2 times.
+        private int times = 0;
+        private void app_DragDrop(object sender, DragEventArgs e)
+        {
+            if (times >= 1) { times = 0; return; }
+            times++;
+            string paths = "";
+            string[] musics = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string music in musics) paths += music;
+            files.Text += ";" + paths;
+        }
+
+        private void app_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
     }
 }
