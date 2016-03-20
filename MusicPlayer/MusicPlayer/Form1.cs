@@ -197,6 +197,7 @@ namespace MusicPlayer
             minimizedToSystemTray = false;
             this.Show();
             this.WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
         }
 
         private void app_Resize(object sender, EventArgs e)
