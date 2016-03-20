@@ -10,6 +10,9 @@ namespace MusicPlayer
     {
         private bool minimizedToSystemTray = false;
 
+        private bool autosave = true;
+        private bool interpreterEnabled = false;
+
         private String[] playlist;
         private int playPosition = -1;
         private int musicVolume = 100;
@@ -198,9 +201,15 @@ namespace MusicPlayer
 
         private void files_TextChanged(object sender, EventArgs e)
         {
-            loadPlaylist();
-            addStringToWriteBuffer(files.Text);
-            writeBufferToFile();
+            if (!interpreterEnabled)
+            {
+                loadPlaylist();
+                if (autosave)
+                {
+                    addStringToWriteBuffer(files.Text);
+                    writeBufferToFile();
+                }
+            }
         }
 
         /**
@@ -282,11 +291,45 @@ namespace MusicPlayer
             setVolume(musicVolume - 5);
         }
 
+        private void setCommand(string cmd)
+        {
+            string[] cmds = cmd.Split(' ');
+            if (cmds.Length == 2)
+                ;
+            else if (cmds.Length == 3)
+                switch (cmds[1])
+                {
+                    case "vol": int v = 0; if (int.TryParse(cmds[2], out v)) setVolume(v); break;
+                }
+        }
+
+        private void parser(string cmd)
+        {
+
+        }
+        private void tokenizer(string cmd)
+        {
+
+        }
+
         private void interpreter(string cmd)
         {
-            if (cmd == "exit")
-                System.Environment.Exit(0);
-            mciSendString(command.Text, null, 0, IntPtr.Zero);
+            string[] cmds = cmd.Split(';');
+            foreach (string c in cmds)
+            {
+                if (c.Substring(0, 3) == "set") setCommand(c);
+                switch (c.ToLower())
+                {
+                    case "q": System.Environment.Exit(0); break;
+                    case "exit": System.Environment.Exit(0); break;
+                    case "start": addStringToWriteBuffer(files.Text); writeBufferToFile(); interpreterEnabled = true; autosave = false; files.Text = ""; files.Focus(); break;
+                    case "goback": files.Text = readFile(@".\userconfig.conf"); loadPlaylist(); interpreterEnabled = false; autosave = true; break;
+                    case "mute": setVolume(0); break;
+                }
+
+                mciSendString(command.Text, null, 0, IntPtr.Zero);
+                command.Text = "";
+            }
         }
 
         private void launch_Click(object sender, EventArgs e)
