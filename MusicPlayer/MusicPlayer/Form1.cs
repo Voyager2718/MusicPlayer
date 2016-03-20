@@ -80,7 +80,6 @@ namespace MusicPlayer
         private void loadPlaylist()
         {
             playlist = files.Text.Trim().Replace("\n", "").Split(';');
-            playPosition = -1;
         }
 
         private void setNextPosition()
@@ -106,7 +105,7 @@ namespace MusicPlayer
         private void setFilename()
         {
             String fn = Path.GetFileNameWithoutExtension(playlist[playPosition]);
-            if (fn.Length > 14) fn = fn.Substring(0, 14) + "..";
+            //if (fn.Length > 14) fn = fn.Substring(0, 14) + "..";
             filename.Text = fn;
         }
 
