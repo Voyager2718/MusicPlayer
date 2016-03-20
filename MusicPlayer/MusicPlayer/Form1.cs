@@ -12,6 +12,7 @@ namespace MusicPlayer
 
         private String[] playlist;
         private int playPosition = -1;
+        private int musicVolume = 100;
 
         private bool playing = false;
         private bool paused = false;
@@ -53,6 +54,7 @@ namespace MusicPlayer
             _command = "open \"" + sFileName + "\" type mpegvideo alias MediaFile";
             mciSendString(_command, null, 0, IntPtr.Zero);
             fileOpened = true;
+            setVolume(musicVolume);
         }
 
         private void Stop()
@@ -77,6 +79,15 @@ namespace MusicPlayer
                 mciSendString(_command, null, 0, IntPtr.Zero);
                 status.Text = "Playing..";
             }
+        }
+
+        private void setVolume(int vol)
+        {
+            if (vol > 100) vol = 100;
+            if (vol < 0) vol = 0;
+            musicVolume = vol;
+            mciSendString("setaudio MediaFile volume to " + musicVolume.ToString(), null, 0, IntPtr.Zero);
+            volume.Text = musicVolume.ToString();
         }
 
         private void pause()
@@ -119,7 +130,7 @@ namespace MusicPlayer
         private void setFilename()
         {
             String fn = Path.GetFileNameWithoutExtension(playlist[playPosition]);
-            //if (fn.Length > 14) fn = fn.Substring(0, 14) + "..";
+            if (fn.Length > 14) fn = fn.Substring(0, 14) + "..";
             filename.Text = fn;
         }
 
@@ -257,6 +268,16 @@ namespace MusicPlayer
         private void app_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        }
+
+        private void increaseVolume_Click(object sender, EventArgs e)
+        {
+            setVolume(musicVolume + 5);
+        }
+
+        private void decreaseVolume_Click(object sender, EventArgs e)
+        {
+            setVolume(musicVolume - 5);
         }
     }
 }

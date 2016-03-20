@@ -166,6 +166,7 @@
             this.increaseVolume.TabIndex = 11;
             this.increaseVolume.Text = "+";
             this.increaseVolume.UseVisualStyleBackColor = true;
+            this.increaseVolume.Click += new System.EventHandler(this.increaseVolume_Click);
             // 
             // decreaseVolume
             // 
@@ -175,6 +176,7 @@
             this.decreaseVolume.TabIndex = 12;
             this.decreaseVolume.Text = "-";
             this.decreaseVolume.UseVisualStyleBackColor = true;
+            this.decreaseVolume.Click += new System.EventHandler(this.decreaseVolume_Click);
             // 
             // status
             // 
