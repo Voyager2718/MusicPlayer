@@ -19,6 +19,8 @@ namespace MusicPlayer
         private string _command;
         private bool fileOpened;
 
+        private string writeBuffer;
+
         //Volume
         private const int APPCOMMAND_VOLUME_MUTE = 0x80000;
         private const int WM_APPCOMMAND = 0x319;
@@ -34,6 +36,8 @@ namespace MusicPlayer
             InitializeComponent();
             //this.DragEnter += new DragEventHandler(app_DragEnter);
             this.DragDrop += new DragEventHandler(app_DragDrop);
+            files.Text = readFile(@".\userconfig.conf");
+            loadPlaylist();
         }
 
         private void Open(string sFileName)
@@ -172,6 +176,8 @@ namespace MusicPlayer
         private void files_TextChanged(object sender, EventArgs e)
         {
             loadPlaylist();
+            addStringToWriteBuffer(files.Text);
+            writeBufferToFile();
         }
 
         /**
@@ -207,6 +213,22 @@ namespace MusicPlayer
         private void notifiIcon_Click(object sender, EventArgs e)
         {
             restoreWindow();
+        }
+
+        private void addStringToWriteBuffer(String s)
+        {
+            writeBuffer += s;
+        }
+
+        private void writeBufferToFile()
+        {
+            System.IO.File.WriteAllText(@".\userconfig.conf", writeBuffer);
+        }
+
+        private string readFile(string path)
+        {
+            try { return System.IO.File.ReadAllText(path); }
+            catch (FileNotFoundException) { return ""; }
         }
 
         //Weird bug. If I drop anything here, this function will be called 2 times.
