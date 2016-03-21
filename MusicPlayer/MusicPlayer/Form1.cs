@@ -3,6 +3,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
+using System.Media;
 
 namespace MusicPlayer
 {
@@ -30,6 +31,13 @@ namespace MusicPlayer
         private const int WM_APPCOMMAND = 0x319;
         private const int APPCOMMAND_VOLUME_UP = 10 * 65536;
         private const int APPCOMMAND_VOLUME_DOWN = 9 * 65536;
+
+        //
+        private const int MM_MCINOTIFY = 0x03b9;
+        private const int MCI_NOTIFY_SUCCESS = 0x01;
+        private const int MCI_NOTIFY_SUPERSEDED = 0x02;
+        private const int MCI_NOTIFY_ABORTED = 0x04;
+        private const int MCI_NOTIFY_FAILURE = 0x08;
 
         //dll
         [DllImport("winmm.dll")]
@@ -76,12 +84,31 @@ namespace MusicPlayer
             if (playlist.Length == 0) return;
             if (fileOpened)
             {
-                _command = "play MediaFile";
+                _command = "play MediaFile notify";
                 if (loop)
                     _command += " REPEAT";
-                mciSendString(_command, null, 0, IntPtr.Zero);
+                mciSendString(_command, null, 0, this.Handle);
                 status.Text = "Playing..";
             }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == MM_MCINOTIFY)
+            {
+                switch (m.WParam.ToInt32())
+                {
+                    case MCI_NOTIFY_SUCCESS:
+                        if (!loop.Checked && !loopAll.Checked)
+                            Stop();
+                        if (loopAll.Checked)
+                            playNext();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            base.WndProc(ref m);
         }
 
         private void setVolume(int vol)
@@ -152,7 +179,7 @@ namespace MusicPlayer
             catch (NullReferenceException) { }
         }
 
-        private void next_Click(object sender, EventArgs e)
+        private void playNext()
         {
             if (!playing) return;
             int nextPosition = getNextPosition();
@@ -164,7 +191,7 @@ namespace MusicPlayer
             setFilename();
         }
 
-        private void previous_Click(object sender, EventArgs e)
+        private void playPrevious()
         {
             if (!playing) return;
             int prevPosition = getPrevPosition();
@@ -174,6 +201,16 @@ namespace MusicPlayer
             Open(playlist[prevPosition]);
             Play(loop.Checked);
             setFilename();
+        }
+
+        private void next_Click(object sender, EventArgs e)
+        {
+            playNext();
+        }
+
+        private void previous_Click(object sender, EventArgs e)
+        {
+            playPrevious();
         }
 
         private void stop_Click(object sender, EventArgs e)
