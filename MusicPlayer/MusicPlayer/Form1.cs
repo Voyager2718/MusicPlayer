@@ -57,6 +57,12 @@ namespace MusicPlayer
 
         private void exit(object sender, EventArgs e)
         {
+            exit();
+        }
+
+        private void exit()
+        {
+            notifiIcon.Visible = false;
             System.Environment.Exit(0);
         }
 
@@ -103,6 +109,16 @@ namespace MusicPlayer
                             Stop();
                         if (loopAll.Checked)
                             playNext();
+                        //MessageBox.Show("1");
+                        break;
+                    case MCI_NOTIFY_SUPERSEDED:
+                        //MessageBox.Show("2");
+                        break;
+                    case MCI_NOTIFY_FAILURE:
+                        //MessageBox.Show("3");
+                        break;
+                    case MCI_NOTIFY_ABORTED:
+                        //MessageBox.Show("4");
                         break;
                     default:
                         break;
@@ -157,9 +173,15 @@ namespace MusicPlayer
             return playPosition <= 0 ? playlist.Length - 1 : playPosition - 1;
         }
 
+        private string getPlayingFilename()
+        {
+            try { return Path.GetFileNameWithoutExtension(playlist[playPosition]); }
+            catch (IndexOutOfRangeException) { return ""; }
+        }
+
         private void setFilename()
         {
-            String fn = Path.GetFileNameWithoutExtension(playlist[playPosition]);
+            String fn = getPlayingFilename();
             if (fn.Length > 14) fn = fn.Substring(0, 14) + "..";
             filename.Text = fn;
         }
@@ -357,8 +379,8 @@ namespace MusicPlayer
                 if (c.Substring(0, 3) == "set") setCommand(c);
                 switch (c.ToLower())
                 {
-                    case "q": System.Environment.Exit(0); break;
-                    case "exit": System.Environment.Exit(0); break;
+                    case "q": exit(); break;
+                    case "exit": exit(); break;
                     case "start": addStringToWriteBuffer(files.Text); writeBufferToFile(); interpreterEnabled = true; autosave = false; files.Text = ""; files.Focus(); break;
                     case "goback": files.Text = readFile(@".\userconfig.conf"); loadPlaylist(); interpreterEnabled = false; autosave = true; break;
                     case "mute": setVolume(0); break;
@@ -378,6 +400,17 @@ namespace MusicPlayer
         {
             if (e.KeyCode == Keys.Enter)
                 interpreter(command.Text);
+        }
+
+        private void filename_MouseHover(object sender, EventArgs e)
+        {
+            System.Windows.Forms.ToolTip toolTip1 = new System.Windows.Forms.ToolTip();
+            toolTip1.SetToolTip(filename, getPlayingFilename());
+        }
+
+        private void loop_CheckedChanged(object sender, EventArgs e)
+        {
+            mciSendString("REPEAT", null, 0, this.Handle);
         }
     }
 }

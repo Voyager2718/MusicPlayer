@@ -109,6 +109,7 @@
             this.filename.Size = new System.Drawing.Size(17, 20);
             this.filename.TabIndex = 5;
             this.filename.Text = "..";
+            this.filename.MouseHover += new System.EventHandler(this.filename_MouseHover);
             // 
             // loop
             // 
@@ -119,6 +120,7 @@
             this.loop.TabIndex = 6;
             this.loop.Text = "Loop";
             this.loop.UseVisualStyleBackColor = true;
+            this.loop.CheckedChanged += new System.EventHandler(this.loop_CheckedChanged);
             // 
             // loopAll
             // 
