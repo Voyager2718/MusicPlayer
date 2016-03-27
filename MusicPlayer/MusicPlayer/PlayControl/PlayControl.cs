@@ -12,17 +12,17 @@ namespace MusicPlayer.PlayControl
     {
         ////////////////Constants////////////////
         //Volume
-        public static const int APPCOMMAND_VOLUME_MUTE = 0x80000;
-        public static const int WM_APPCOMMAND = 0x319;
-        public static const int APPCOMMAND_VOLUME_UP = 10 * 65536;
-        public static const int APPCOMMAND_VOLUME_DOWN = 9 * 65536;
+        public const int APPCOMMAND_VOLUME_MUTE = 0x80000;
+        public const int WM_APPCOMMAND = 0x319;
+        public const int APPCOMMAND_VOLUME_UP = 10 * 65536;
+        public const int APPCOMMAND_VOLUME_DOWN = 9 * 65536;
 
         //Handler
-        public static const int MM_MCINOTIFY = 0x03b9;
-        public static const int MCI_NOTIFY_SUCCESS = 0x01;
-        public static const int MCI_NOTIFY_SUPERSEDED = 0x02;
-        public static const int MCI_NOTIFY_ABORTED = 0x04;
-        public static const int MCI_NOTIFY_FAILURE = 0x08;
+        public const int MM_MCINOTIFY = 0x03b9;
+        public const int MCI_NOTIFY_SUCCESS = 0x01;
+        public const int MCI_NOTIFY_SUPERSEDED = 0x02;
+        public const int MCI_NOTIFY_ABORTED = 0x04;
+        public const int MCI_NOTIFY_FAILURE = 0x08;
 
         ////////////////Enums////////////////
         public enum Status { PLAYING, WAITING, PAUSED, EXCEPTION };

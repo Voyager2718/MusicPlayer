@@ -9,8 +9,6 @@ namespace MusicPlayer
 {
     public partial class app : Form
     {
-        private bool minimizedToSystemTray = false;
-
         private bool autosave = true;
         private bool interpreterEnabled = false;
 
@@ -22,12 +20,12 @@ namespace MusicPlayer
             //this.DragEnter += new DragEventHandler(app_DragEnter);
             this.DragDrop += new DragEventHandler(app_DragDrop);
             files.Text = readFromUserconfig();
-            //       loadPlaylist();
             notifiIcon.ContextMenu = new ContextMenu(new MenuItem[] { 
                 new MenuItem("Exit", exit),
             });
 
             playControl = new PlayControl.PlayControl(this.Handle);
+            //       loadPlaylist();
         }
 
         private void exit(object sender, EventArgs e)
@@ -58,7 +56,6 @@ namespace MusicPlayer
             bool cursorNotInBar = Screen.GetWorkingArea(this).Contains(Cursor.Position);
             if (this.WindowState == FormWindowState.Minimized && cursorNotInBar)
             {
-                minimizedToSystemTray = true;
                 this.ShowInTaskbar = false;
                 this.Hide();
                 this.notifiIcon.Text = "Click to restore window";
@@ -68,7 +65,6 @@ namespace MusicPlayer
         //Restore windows
         private void restoreWindow()
         {
-            minimizedToSystemTray = false;
             this.Show();
             this.WindowState = FormWindowState.Normal;
             this.ShowInTaskbar = true;
@@ -109,22 +105,7 @@ namespace MusicPlayer
 
         private void interpreter(string cmd)
         {
-            string[] cmds = cmd.Split(';');
-            foreach (string c in cmds)
-            {
-                if (c.Substring(0, 3) == "set") setCommand(c);
-                switch (c.ToLower())
-                {
-                    case "q": exit(); break;
-                    case "exit": exit(); break;
-                    case "start": writeToUserconfig(files.Text); interpreterEnabled = true; autosave = false; files.Text = ""; files.Focus(); break;
-                    // case "goback": files.Text = readFile(@".\userconfig.conf"); loadPlaylist(); interpreterEnabled = false; autosave = true; break;
-                    //  case "mute": setVolume(0); break;
-                }
-
-                //mciSendString(command.Text, null, 0, IntPtr.Zero);
-                command.Text = "";
-            }
+            //TODO
         }
 
         ////////////////Events////////////////
