@@ -22,31 +22,44 @@ namespace MusicPlayer.PlayControl
         private const int MCI_NOTIFY_SUPERSEDED = 0x02;
         private const int MCI_NOTIFY_ABORTED = 0x04;
         private const int MCI_NOTIFY_FAILURE = 0x08;
-        protected IntPtr handle;
-
         ////////////////End of constants////////////////
 
+        ////////////////Enums////////////////
+        public enum Status { PLAYING, WAITING, PAUSED, EXCEPTION };
+        public enum ChangeVolume { INCR1, DECR1, INCR5, DECR5, INCR10, DECR10 };
+        ////////////////End of enums////////////////
+
+
+        ////////////////Local variables////////////////
+        protected IntPtr handle;
 
         protected List<String> playList;
-
         protected int volume = 100;
-
-        protected bool fileOpened;
+        protected String playingFile = "";
+        protected bool fileOpened = false;
+        protected Status status;
 
         [DllImport("winmm.dll")]
-        private static extern long mciSendString(string strCommand, StringBuilder strReturn, int iReturnLength, IntPtr hwndCallback);
+        protected static extern long mciSendString(string strCommand, StringBuilder strReturn, int iReturnLength, IntPtr hwndCallback);
+        ////////////////End of local variables////////////////
 
-        public PlayControl(List<String> playList, int volume = 100)
+        ////////////////Constructors////////////////
+        public PlayControl(List<String> playList, IntPtr handle, int volume = 100)
         {
             this.playList = new List<String>(playList);
             this.volume = volume;
+            this.handle = handle;
+            this.status = Status.WAITING;
         }
 
-        public PlayControl()
+        public PlayControl(IntPtr handle)
         {
             playList = new List<String>();
+            this.handle = handle;
+            this.status = Status.WAITING;
         }
 
+        ////////////////Control functions////////////////
         public void open(String filename)
         {
             String command = "open \"" + filename + "\" type mpegvideo alias MediaFile";
@@ -62,7 +75,7 @@ namespace MusicPlayer.PlayControl
                 String command = "play MediaFile notify";
                 if (loop)
                     command += " REPEAT";
-                mciSendString(command, null, 0, IntPtr.Zero);
+                mciSendString(command, null, 0, handle);
                 return true;
             }
             return false;
@@ -71,22 +84,50 @@ namespace MusicPlayer.PlayControl
         public void pause()
         {
             String command = "pause MediaFile";
-            mciSendString(command, null, 0, IntPtr.Zero);
+            mciSendString(command, null, 0, handle);
         }
 
         public void resume()
         {
             String command = "resume MediaFile";
-            mciSendString(command, null, 0, IntPtr.Zero);
+            mciSendString(command, null, 0, handle);
         }
 
-        public void stop() { }
-
-        public void setVolume(int volume) { }
-
-        public int getVolume()
+        public void stop()
         {
-            return this.volume;
+            String command = "stop MediaFile";
+            mciSendString(command, null, 0, handle);
         }
+
+        ////////////////Setters and getters////////////////
+        public void setVolume(int volume) { this.volume = volume; }
+
+        public void setVolume(ChangeVolume volume)
+        {
+            switch (volume)
+            {
+                case ChangeVolume.INCR1: setVolume(this.volume + 1); break;
+                case ChangeVolume.INCR5: setVolume(this.volume + 5); break;
+                case ChangeVolume.INCR10: setVolume(this.volume + 10); break;
+
+                case ChangeVolume.DECR1: setVolume(this.volume - 1); break;
+                case ChangeVolume.DECR5: setVolume(this.volume - 5); break;
+                case ChangeVolume.DECR10: setVolume(this.volume - 10); break;
+            }
+        }
+        public int getVolume() { return this.volume; }
+
+        public Status getStatus() { return status; }
+
+        public String getPlayingFile() { return playingFile; }
+
+        public void setPlaylist(String playlist)
+        {
+
+        }
+
+        public void setPlaylist(List<String> playlist) { this.playList = playlist.ToList(); }
+
+        public List<String> getPlaylist() { return playList; }
     }
 }

@@ -14,17 +14,9 @@ namespace MusicPlayer
         private bool autosave = true;
         private bool interpreterEnabled = false;
 
-        private String[] playlist;
-        private int playPosition = -1;
-        private int musicVolume = 100;
-
-        private bool playing = false;
-        private bool paused = false;
-
-        private string _command;
-        private bool fileOpened;
-
         private string writeBuffer;
+
+        private PlayControl.PlayControl playControl;
 
         public app()
         {
@@ -262,12 +254,14 @@ namespace MusicPlayer
             //mciSendString("REPEAT", null, 0, this.Handle);
         }
 
+
+        //get version
         private int cheat = 0;
         private void status_Click(object sender, EventArgs e)
         {
             if (++cheat >= 2)
             {
-                MessageBox.Show("v0.01.1006");
+                MessageBox.Show("v0.01.1100");
                 cheat = 0;
             }
         }
