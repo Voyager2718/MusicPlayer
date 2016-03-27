@@ -191,6 +191,7 @@
             this.status.Size = new System.Drawing.Size(73, 20);
             this.status.TabIndex = 13;
             this.status.Text = "Waiting..";
+            this.status.Click += new System.EventHandler(this.status_Click);
             // 
             // copyright
             // 

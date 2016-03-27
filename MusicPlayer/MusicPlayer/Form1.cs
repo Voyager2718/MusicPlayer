@@ -26,30 +26,13 @@ namespace MusicPlayer
 
         private string writeBuffer;
 
-        //Volume
-        private const int APPCOMMAND_VOLUME_MUTE = 0x80000;
-        private const int WM_APPCOMMAND = 0x319;
-        private const int APPCOMMAND_VOLUME_UP = 10 * 65536;
-        private const int APPCOMMAND_VOLUME_DOWN = 9 * 65536;
-
-        //
-        private const int MM_MCINOTIFY = 0x03b9;
-        private const int MCI_NOTIFY_SUCCESS = 0x01;
-        private const int MCI_NOTIFY_SUPERSEDED = 0x02;
-        private const int MCI_NOTIFY_ABORTED = 0x04;
-        private const int MCI_NOTIFY_FAILURE = 0x08;
-
-        //dll
-        [DllImport("winmm.dll")]
-        private static extern long mciSendString(string strCommand, StringBuilder strReturn, int iReturnLength, IntPtr hwndCallback);
-
         public app()
         {
             InitializeComponent();
             //this.DragEnter += new DragEventHandler(app_DragEnter);
             this.DragDrop += new DragEventHandler(app_DragDrop);
             files.Text = readFile(@".\userconfig.conf");
-            loadPlaylist();
+            //       loadPlaylist();
             notifiIcon.ContextMenu = new ContextMenu(new MenuItem[] { 
                 new MenuItem("Exit", exit),
             });
@@ -57,7 +40,8 @@ namespace MusicPlayer
 
         private void exit(object sender, EventArgs e)
         {
-            exit();
+            notifiIcon.Visible = false;
+            System.Environment.Exit(0);
         }
 
         private void exit()
@@ -66,209 +50,74 @@ namespace MusicPlayer
             System.Environment.Exit(0);
         }
 
-        private void Open(string sFileName)
-        {
-            _command = "open \"" + sFileName + "\" type mpegvideo alias MediaFile";
-            mciSendString(_command, null, 0, IntPtr.Zero);
-            fileOpened = true;
-            setVolume(musicVolume);
-        }
-
-        private void Stop()
-        {
-            status.Text = "Waiting..";
-            paused = false;
-            ps.Text = "Pause";
-
-            _command = "close MediaFile";
-            mciSendString(_command, null, 0, IntPtr.Zero);
-            fileOpened = false;
-        }
-
-        private void Play(bool loop)
-        {
-            if (playlist.Length == 0) return;
-            if (fileOpened)
-            {
-                _command = "play MediaFile notify";
-                if (loop)
-                    _command += " REPEAT";
-                mciSendString(_command, null, 0, this.Handle);
-                status.Text = "Playing..";
-            }
-        }
-
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == MM_MCINOTIFY)
-            {
-                switch (m.WParam.ToInt32())
-                {
-                    case MCI_NOTIFY_SUCCESS:
-                        if (!loop.Checked && !loopAll.Checked)
-                            Stop();
-                        if (loopAll.Checked)
-                            playNext();
-                        //MessageBox.Show("1");
-                        break;
-                    case MCI_NOTIFY_SUPERSEDED:
-                        //MessageBox.Show("2");
-                        break;
-                    case MCI_NOTIFY_FAILURE:
-                        //MessageBox.Show("3");
-                        break;
-                    case MCI_NOTIFY_ABORTED:
-                        //MessageBox.Show("4");
-                        break;
-                    default:
-                        break;
-                }
-            }
-            base.WndProc(ref m);
-        }
-
-        private void setVolume(int vol)
-        {
-            if (vol > 100) vol = 100;
-            if (vol < 0) vol = 0;
-            musicVolume = vol;
-            mciSendString("setaudio MediaFile volume to " + musicVolume.ToString(), null, 0, IntPtr.Zero);
-            volume.Text = musicVolume.ToString();
-        }
-
-        private void pause()
-        {
-            _command = "pause MediaFile";
-            mciSendString(_command, null, 0, IntPtr.Zero);
-        }
-
-        private void resume()
-        {
-            _command = "resume MediaFile";
-            mciSendString(_command, null, 0, IntPtr.Zero);
-        }
-
-        private void loadPlaylist()
-        {
-            playlist = files.Text.Trim().Replace("\n", "").Split(';');
-        }
-
-        private void setNextPosition()
-        {
-            playPosition = playPosition >= playlist.Length - 1 ? 0 : playPosition + 1;
-        }
-
-        private int getNextPosition()
-        {
-            return playPosition >= playlist.Length - 1 ? 0 : playPosition + 1;
-        }
-
-        private void setPrevPosition()
-        {
-            playPosition = playPosition <= 0 ? playlist.Length - 1 : playPosition - 1;
-        }
-
-        private int getPrevPosition()
-        {
-            return playPosition <= 0 ? playlist.Length - 1 : playPosition - 1;
-        }
-
-        private string getPlayingFilename()
-        {
-            try { return Path.GetFileNameWithoutExtension(playlist[playPosition]); }
-            catch (IndexOutOfRangeException) { return ""; }
+            //if (m.Msg == MM_MCINOTIFY)
+            //{
+            //    //MessageBox.Show(loop.Checked.ToString() + " " + loopAll.Checked.ToString());
+            //    switch (m.WParam.ToInt32())
+            //    {
+            //        case MCI_NOTIFY_SUCCESS:
+            //            if (!loop.Checked && !loopAll.Checked)
+            //                Stop();
+            //            if (loopAll.Checked)
+            //                playNext();
+            //            //messagebox.Show("1");
+            //            break;
+            //        case MCI_NOTIFY_SUPERSEDED:
+            //            //MessageBox.Show("2");
+            //            break;
+            //        case MCI_NOTIFY_FAILURE:
+            //            //MessageBox.Show("3");
+            //            break;
+            //        case MCI_NOTIFY_ABORTED:
+            //            //MessageBox.Show("4");
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //}
+            //base.WndProc(ref m);
         }
 
         private void setFilename()
         {
-            String fn = getPlayingFilename();
-            if (fn.Length > 14) fn = fn.Substring(0, 14) + "..";
-            filename.Text = fn;
+
         }
 
         private void play_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (playlist.Length == 0) return;
-                Open(playlist[playPosition == -1 ? ++playPosition : playPosition]);
-                Play(loop.Checked);
-                playing = true;
-                setFilename();
-                ps.Text = "Pause";
-                paused = false;
-            }
-            catch (NullReferenceException) { }
+
         }
 
         private void playNext()
         {
-            if (!playing) return;
-            int nextPosition = getNextPosition();
-            setNextPosition();
-            Stop();
-            loadPlaylist();
-            Open(playlist[nextPosition]);
-            Play(loop.Checked);
-            setFilename();
-        }
 
-        private void playPrevious()
-        {
-            if (!playing) return;
-            int prevPosition = getPrevPosition();
-            setPrevPosition();
-            Stop();
-            loadPlaylist();
-            Open(playlist[prevPosition]);
-            Play(loop.Checked);
-            setFilename();
         }
 
         private void next_Click(object sender, EventArgs e)
         {
-            playNext();
+
         }
 
         private void previous_Click(object sender, EventArgs e)
         {
-            playPrevious();
+
         }
 
         private void stop_Click(object sender, EventArgs e)
         {
-            Stop();
-            playing = false;
+
         }
 
         private void pause_click(object sender, EventArgs e)
         {
-            if (!playing) return;
-            if (!paused)
-            {
-                ps.Text = "Resume";
-                pause();
-                paused = true;
-            }
-            else
-            {
-                ps.Text = "Pause";
-                resume();
-                paused = false;
-            }
+
         }
 
         private void files_TextChanged(object sender, EventArgs e)
         {
-            if (!interpreterEnabled)
-            {
-                loadPlaylist();
-                if (autosave)
-                {
-                    addStringToWriteBuffer(files.Text);
-                    writeBufferToFile();
-                }
-            }
+
         }
 
         /**
@@ -342,12 +191,12 @@ namespace MusicPlayer
 
         private void increaseVolume_Click(object sender, EventArgs e)
         {
-            setVolume(musicVolume + 5);
+
         }
 
         private void decreaseVolume_Click(object sender, EventArgs e)
         {
-            setVolume(musicVolume - 5);
+
         }
 
         private void setCommand(string cmd)
@@ -358,7 +207,7 @@ namespace MusicPlayer
             else if (cmds.Length == 3)
                 switch (cmds[1])
                 {
-                    case "vol": int v = 0; if (int.TryParse(cmds[2], out v)) setVolume(v); break;
+                    //case "vol": int v = 0; if (int.TryParse(cmds[2], out v)) setVolume(v); break;
                 }
         }
 
@@ -382,11 +231,11 @@ namespace MusicPlayer
                     case "q": exit(); break;
                     case "exit": exit(); break;
                     case "start": addStringToWriteBuffer(files.Text); writeBufferToFile(); interpreterEnabled = true; autosave = false; files.Text = ""; files.Focus(); break;
-                    case "goback": files.Text = readFile(@".\userconfig.conf"); loadPlaylist(); interpreterEnabled = false; autosave = true; break;
-                    case "mute": setVolume(0); break;
+                    // case "goback": files.Text = readFile(@".\userconfig.conf"); loadPlaylist(); interpreterEnabled = false; autosave = true; break;
+                    //  case "mute": setVolume(0); break;
                 }
 
-                mciSendString(command.Text, null, 0, IntPtr.Zero);
+                //mciSendString(command.Text, null, 0, IntPtr.Zero);
                 command.Text = "";
             }
         }
@@ -405,12 +254,22 @@ namespace MusicPlayer
         private void filename_MouseHover(object sender, EventArgs e)
         {
             System.Windows.Forms.ToolTip toolTip1 = new System.Windows.Forms.ToolTip();
-            toolTip1.SetToolTip(filename, getPlayingFilename());
+            //toolTip1.SetToolTip(filename, getPlayingFilename());
         }
 
         private void loop_CheckedChanged(object sender, EventArgs e)
         {
-            mciSendString("REPEAT", null, 0, this.Handle);
+            //mciSendString("REPEAT", null, 0, this.Handle);
+        }
+
+        private int cheat = 0;
+        private void status_Click(object sender, EventArgs e)
+        {
+            if (++cheat >= 2)
+            {
+                MessageBox.Show("v0.01.1006");
+                cheat = 0;
+            }
         }
     }
 }
