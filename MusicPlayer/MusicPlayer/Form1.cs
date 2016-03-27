@@ -14,8 +14,6 @@ namespace MusicPlayer
         private bool autosave = true;
         private bool interpreterEnabled = false;
 
-        private string writeBuffer;
-
         private PlayControl.PlayControl playControl;
 
         public app()
@@ -23,11 +21,13 @@ namespace MusicPlayer
             InitializeComponent();
             //this.DragEnter += new DragEventHandler(app_DragEnter);
             this.DragDrop += new DragEventHandler(app_DragDrop);
-            files.Text = readFile(@".\userconfig.conf");
+            files.Text = readFromUserconfig();
             //       loadPlaylist();
             notifiIcon.ContextMenu = new ContextMenu(new MenuItem[] { 
                 new MenuItem("Exit", exit),
             });
+
+            playControl = new PlayControl.PlayControl(this.Handle);
         }
 
         private void exit(object sender, EventArgs e)
@@ -44,78 +44,15 @@ namespace MusicPlayer
 
         protected override void WndProc(ref Message m)
         {
-            //if (m.Msg == MM_MCINOTIFY)
-            //{
-            //    //MessageBox.Show(loop.Checked.ToString() + " " + loopAll.Checked.ToString());
-            //    switch (m.WParam.ToInt32())
-            //    {
-            //        case MCI_NOTIFY_SUCCESS:
-            //            if (!loop.Checked && !loopAll.Checked)
-            //                Stop();
-            //            if (loopAll.Checked)
-            //                playNext();
-            //            //messagebox.Show("1");
-            //            break;
-            //        case MCI_NOTIFY_SUPERSEDED:
-            //            //MessageBox.Show("2");
-            //            break;
-            //        case MCI_NOTIFY_FAILURE:
-            //            //MessageBox.Show("3");
-            //            break;
-            //        case MCI_NOTIFY_ABORTED:
-            //            //MessageBox.Show("4");
-            //            break;
-            //        default:
-            //            break;
-            //    }
-            //}
-            //base.WndProc(ref m);
+            if (m.Msg == PlayControl.PlayControl.MM_MCINOTIFY)
+            {
+                playControl.messageListener(m.WParam.ToInt32());
+            }
+            base.WndProc(ref m);
         }
 
-        private void setFilename()
-        {
-
-        }
-
-        private void play_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void playNext()
-        {
-
-        }
-
-        private void next_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void previous_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void stop_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pause_click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void files_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        /**
-         * Minimize the window to system tray and hide in taskbar.
-         * 
-         */
+        ////////////////Internal functions////////////////
+        //Minimize the window to system tray and hide in taskbar.
         private void minimizeToSystemTray()
         {
             bool cursorNotInBar = Screen.GetWorkingArea(this).Contains(Cursor.Position);
@@ -137,58 +74,16 @@ namespace MusicPlayer
             this.ShowInTaskbar = true;
         }
 
-        private void app_Resize(object sender, EventArgs e)
+        private void writeToUserconfig(String data)
         {
-            minimizeToSystemTray();
+            System.IO.File.WriteAllText(@".\userconfig.conf", data);
         }
 
-        private void notifiIcon_Click(object sender, EventArgs e)
+        private string readFromUserconfig()
         {
-            restoreWindow();
-        }
-
-        private void addStringToWriteBuffer(String s)
-        {
-            writeBuffer += s;
-        }
-
-        private void writeBufferToFile()
-        {
-            System.IO.File.WriteAllText(@".\userconfig.conf", writeBuffer);
-            writeBuffer = "";
-        }
-
-        private string readFile(string path)
-        {
-            try { return System.IO.File.ReadAllText(path); }
+            try { return System.IO.File.ReadAllText(@".\userconfig.conf"); }
             catch (FileNotFoundException) { return ""; }
-        }
-
-        //Weird bug. If I drop anything here, this function will be called 2 times.
-        private int times = 0;
-        private void app_DragDrop(object sender, DragEventArgs e)
-        {
-            if (times >= 1) { times = 0; return; }
-            times++;
-            string paths = "";
-            string[] musics = (string[])e.Data.GetData(DataFormats.FileDrop);
-            foreach (string music in musics) paths += music;
-            files.Text += ";" + paths;
-        }
-
-        private void app_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
-        }
-
-        private void increaseVolume_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void decreaseVolume_Click(object sender, EventArgs e)
-        {
-
+            catch (Exception) { return ""; }
         }
 
         private void setCommand(string cmd)
@@ -205,11 +100,11 @@ namespace MusicPlayer
 
         private void parser(string cmd)
         {
-
+            //TODO
         }
         private void tokenizer(string cmd)
         {
-
+            //TODO
         }
 
         private void interpreter(string cmd)
@@ -222,7 +117,7 @@ namespace MusicPlayer
                 {
                     case "q": exit(); break;
                     case "exit": exit(); break;
-                    case "start": addStringToWriteBuffer(files.Text); writeBufferToFile(); interpreterEnabled = true; autosave = false; files.Text = ""; files.Focus(); break;
+                    case "start": writeToUserconfig(files.Text); interpreterEnabled = true; autosave = false; files.Text = ""; files.Focus(); break;
                     // case "goback": files.Text = readFile(@".\userconfig.conf"); loadPlaylist(); interpreterEnabled = false; autosave = true; break;
                     //  case "mute": setVolume(0); break;
                 }
@@ -230,6 +125,72 @@ namespace MusicPlayer
                 //mciSendString(command.Text, null, 0, IntPtr.Zero);
                 command.Text = "";
             }
+        }
+
+        ////////////////Events////////////////
+        private void play_Click(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void next_Click(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void previous_Click(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void stop_Click(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void pause_click(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void files_TextChanged(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void app_Resize(object sender, EventArgs e)
+        {
+            minimizeToSystemTray();
+        }
+
+        private void notifiIcon_Click(object sender, EventArgs e)
+        {
+            restoreWindow();
+        }
+
+        //Weird bug. If I drop anything here, this function will be called 2 times.
+        private int times = 0;
+        private void app_DragDrop(object sender, DragEventArgs e)
+        {
+            if (times >= 1) { times = 0; return; }
+            times++;
+            //TODO
+        }
+
+        private void app_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+            //TODO
+        }
+
+        private void increaseVolume_Click(object sender, EventArgs e)
+        {
+            playControl.setVolume(PlayControl.PlayControl.ChangeVolume.INCR5);
+        }
+
+        private void decreaseVolume_Click(object sender, EventArgs e)
+        {
+            playControl.setVolume(PlayControl.PlayControl.ChangeVolume.DECR5);
         }
 
         private void launch_Click(object sender, EventArgs e)
@@ -246,14 +207,24 @@ namespace MusicPlayer
         private void filename_MouseHover(object sender, EventArgs e)
         {
             System.Windows.Forms.ToolTip toolTip1 = new System.Windows.Forms.ToolTip();
-            //toolTip1.SetToolTip(filename, getPlayingFilename());
+            toolTip1.SetToolTip(filename, playControl.getPlayingFile());
+            //TODO
         }
 
         private void loop_CheckedChanged(object sender, EventArgs e)
         {
-            //mciSendString("REPEAT", null, 0, this.Handle);
+            //TODO
         }
 
+        private void loopAll_CheckedChanged(object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        private void playOnce_CheckedChanged(object sender, EventArgs e)
+        {
+            //TODO
+        }
 
         //get version
         private int cheat = 0;
@@ -265,5 +236,6 @@ namespace MusicPlayer
                 cheat = 0;
             }
         }
+
     }
 }

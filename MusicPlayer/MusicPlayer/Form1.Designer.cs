@@ -131,6 +131,7 @@
             this.loopAll.TabIndex = 7;
             this.loopAll.Text = "Loop all";
             this.loopAll.UseVisualStyleBackColor = true;
+            this.loopAll.CheckedChanged += new System.EventHandler(this.loopAll_CheckedChanged);
             // 
             // playOnce
             // 
@@ -143,6 +144,7 @@
             this.playOnce.TabStop = true;
             this.playOnce.Text = "Play once";
             this.playOnce.UseVisualStyleBackColor = true;
+            this.playOnce.CheckedChanged += new System.EventHandler(this.playOnce_CheckedChanged);
             // 
             // volume
             // 

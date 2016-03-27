@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace MusicPlayer.PlayControl
 {
@@ -11,24 +12,21 @@ namespace MusicPlayer.PlayControl
     {
         ////////////////Constants////////////////
         //Volume
-        private const int APPCOMMAND_VOLUME_MUTE = 0x80000;
-        private const int WM_APPCOMMAND = 0x319;
-        private const int APPCOMMAND_VOLUME_UP = 10 * 65536;
-        private const int APPCOMMAND_VOLUME_DOWN = 9 * 65536;
+        public static const int APPCOMMAND_VOLUME_MUTE = 0x80000;
+        public static const int WM_APPCOMMAND = 0x319;
+        public static const int APPCOMMAND_VOLUME_UP = 10 * 65536;
+        public static const int APPCOMMAND_VOLUME_DOWN = 9 * 65536;
 
         //Handler
-        private const int MM_MCINOTIFY = 0x03b9;
-        private const int MCI_NOTIFY_SUCCESS = 0x01;
-        private const int MCI_NOTIFY_SUPERSEDED = 0x02;
-        private const int MCI_NOTIFY_ABORTED = 0x04;
-        private const int MCI_NOTIFY_FAILURE = 0x08;
-        ////////////////End of constants////////////////
+        public static const int MM_MCINOTIFY = 0x03b9;
+        public static const int MCI_NOTIFY_SUCCESS = 0x01;
+        public static const int MCI_NOTIFY_SUPERSEDED = 0x02;
+        public static const int MCI_NOTIFY_ABORTED = 0x04;
+        public static const int MCI_NOTIFY_FAILURE = 0x08;
 
         ////////////////Enums////////////////
         public enum Status { PLAYING, WAITING, PAUSED, EXCEPTION };
         public enum ChangeVolume { INCR1, DECR1, INCR5, DECR5, INCR10, DECR10 };
-        ////////////////End of enums////////////////
-
 
         ////////////////Local variables////////////////
         protected IntPtr handle;
@@ -57,6 +55,30 @@ namespace MusicPlayer.PlayControl
             playList = new List<String>();
             this.handle = handle;
             this.status = Status.WAITING;
+        }
+
+        ////////////////Message listeners////////////////
+        public void messageListener(Int32 message)
+        {
+            switch (message)
+            {
+                case MCI_NOTIFY_SUCCESS:
+
+                    //messagebox.Show("1");
+                    break;
+                case MCI_NOTIFY_SUPERSEDED:
+                    //MessageBox.Show("2");
+                    break;
+                case MCI_NOTIFY_FAILURE:
+                    //MessageBox.Show("3");
+                    break;
+                case MCI_NOTIFY_ABORTED:
+                    //MessageBox.Show("4");
+                    break;
+                default:
+                    break;
+            }
+
         }
 
         ////////////////Control functions////////////////
