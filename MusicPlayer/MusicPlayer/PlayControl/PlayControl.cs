@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace MusicPlayer.PlayControl
         ////////////////Enums////////////////
         public enum Status { PLAYING, WAITING, PAUSED, EXCEPTION };
         public enum ChangeVolume { INCR1, DECR1, INCR5, DECR5, INCR10, DECR10 };
+        public enum LoopMode { ONCE, LOOP, ALL };
 
         ////////////////Local variables////////////////
         protected IntPtr handle;
@@ -36,6 +38,7 @@ namespace MusicPlayer.PlayControl
         protected String playingFile = "";
         protected bool fileOpened = false;
         protected Status status;
+        protected LoopMode loopMode;
 
         [DllImport("winmm.dll")]
         protected static extern long mciSendString(string strCommand, StringBuilder strReturn, int iReturnLength, IntPtr hwndCallback);
@@ -63,7 +66,7 @@ namespace MusicPlayer.PlayControl
             switch (message)
             {
                 case MCI_NOTIFY_SUCCESS:
-
+                    status = Status.WAITING;
                     //messagebox.Show("1");
                     break;
                 case MCI_NOTIFY_SUPERSEDED:
@@ -82,41 +85,63 @@ namespace MusicPlayer.PlayControl
         }
 
         ////////////////Control functions////////////////
-        public void open(String filename)
+        public void open(String filepath)
         {
-            String command = "open \"" + filename + "\" type mpegvideo alias MediaFile";
+            if (!File.Exists(filepath))
+                throw new FileNotFoundException();
+            String command = "open \"" + filepath + "\" type mpegvideo alias MediaFile";
             mciSendString(command, null, 0, IntPtr.Zero);
             fileOpened = true;
             setVolume(volume);
         }
 
-        public bool play(bool loop = false)
+        public void play()
         {
-            if (fileOpened)
+            play(loopMode);
+        }
+
+        public void play(LoopMode loopMode)
+        {
+            if (!fileOpened)
             {
-                String command = "play MediaFile notify";
-                if (loop)
-                    command += " REPEAT";
-                mciSendString(command, null, 0, handle);
-                return true;
+                status = Status.EXCEPTION;
+                throw new FileNotOpenedException();
             }
-            return false;
+
+            if (status == Status.PAUSED)
+                resume();
+
+            status = Status.PLAYING;
+            this.loopMode = loopMode;
+
+            String command = "play MediaFile notify";
+            switch (loopMode)
+            {
+                case LoopMode.ONCE: break;
+                case LoopMode.LOOP: command += " REPEAT"; break;
+                case LoopMode.ALL: break;
+            }
+            mciSendString(command, null, 0, handle);
+            setVolume(volume);
         }
 
         public void pause()
         {
+            status = Status.PAUSED;
             String command = "pause MediaFile";
             mciSendString(command, null, 0, handle);
         }
 
         public void resume()
         {
+            status = Status.PLAYING;
             String command = "resume MediaFile";
             mciSendString(command, null, 0, handle);
         }
 
         public void stop()
         {
+            status = Status.WAITING;
             String command = "stop MediaFile";
             mciSendString(command, null, 0, handle);
         }

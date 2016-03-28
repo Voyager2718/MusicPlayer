@@ -111,7 +111,8 @@ namespace MusicPlayer
         ////////////////Events////////////////
         private void play_Click(object sender, EventArgs e)
         {
-            //TODO
+            playControl.open(files.Text);//TODO : Just for test
+            playControl.play(playOnce.Checked ? PlayControl.PlayControl.LoopMode.ONCE : loop.Checked ? PlayControl.PlayControl.LoopMode.LOOP : PlayControl.PlayControl.LoopMode.ALL);
         }
 
         private void next_Click(object sender, EventArgs e)
