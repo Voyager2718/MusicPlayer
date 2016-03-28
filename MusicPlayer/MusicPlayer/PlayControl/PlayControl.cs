@@ -33,31 +33,35 @@ namespace MusicPlayer.PlayControl
         ////////////////Local variables////////////////
         protected IntPtr handle;
 
-        protected List<String> playList;
-        protected int volume = 100;
-        protected String playingFile = "";
+        protected List<String> playlist;
+
+        protected String playingFileName = "";
+
         protected bool fileOpened = false;
-        protected Status status;
+        protected Status status = Status.WAITING;
         protected LoopMode loopMode;
+
+        protected int playPosition = 0;
+        protected int volume = 100;
+
+        protected bool playlistChanged = false;
 
         [DllImport("winmm.dll")]
         protected static extern long mciSendString(string strCommand, StringBuilder strReturn, int iReturnLength, IntPtr hwndCallback);
         ////////////////End of local variables////////////////
 
         ////////////////Constructors////////////////
-        public PlayControl(List<String> playList, IntPtr handle, int volume = 100)
+        public PlayControl(List<String> playlist, IntPtr handle, int volume = 100)
         {
-            this.playList = new List<String>(playList);
+            this.playlist = new List<String>(playlist);
             this.volume = volume;
             this.handle = handle;
-            this.status = Status.WAITING;
         }
 
         public PlayControl(IntPtr handle)
         {
-            playList = new List<String>();
+            playlist = new List<String>();
             this.handle = handle;
-            this.status = Status.WAITING;
         }
 
         ////////////////Message listeners////////////////
@@ -66,8 +70,9 @@ namespace MusicPlayer.PlayControl
             switch (message)
             {
                 case MCI_NOTIFY_SUCCESS:
+                    MessageBox.Show("1");
                     status = Status.WAITING;
-                    //messagebox.Show("1");
+                    onFinished();
                     break;
                 case MCI_NOTIFY_SUPERSEDED:
                     //MessageBox.Show("2");
@@ -81,26 +86,43 @@ namespace MusicPlayer.PlayControl
                 default:
                     break;
             }
+        }
 
+        protected void onPlaylistChanged()
+        {
+            playPosition = 0;
+            playlistChanged = true;
+        }
+
+        protected void onFinished()
+        {
+            switch (loopMode)
+            {
+                case LoopMode.ONCE: return;
+                case LoopMode.LOOP: play(); break;
+                case LoopMode.ALL: open(getNextFilePath()).play(); break;
+            }
         }
 
         ////////////////Control functions////////////////
-        public void open(String filepath)
+        public PlayControl open(String filepath)
         {
             if (!File.Exists(filepath))
                 throw new FileNotFoundException();
             String command = "open \"" + filepath + "\" type mpegvideo alias MediaFile";
             mciSendString(command, null, 0, IntPtr.Zero);
             fileOpened = true;
-            setVolume(volume);
+            status = Status.WAITING;
+            return this;
         }
 
-        public void play()
+        public PlayControl play()
         {
             play(loopMode);
+            return this;
         }
 
-        public void play(LoopMode loopMode)
+        public PlayControl play(LoopMode loopMode)
         {
             if (!fileOpened)
             {
@@ -109,41 +131,76 @@ namespace MusicPlayer.PlayControl
             }
 
             if (status == Status.PAUSED)
+            {
                 resume();
+                return this;
+            }
 
             status = Status.PLAYING;
             this.loopMode = loopMode;
 
             String command = "play MediaFile notify";
-            switch (loopMode)
-            {
-                case LoopMode.ONCE: break;
-                case LoopMode.LOOP: command += " REPEAT"; break;
-                case LoopMode.ALL: break;
-            }
+
+            changeLoopMode(loopMode);
+
             mciSendString(command, null, 0, handle);
             setVolume(volume);
+
+            return this;
         }
 
-        public void pause()
+        public PlayControl playAt(int index)
+        {
+            open(getFileAt(index)).play();
+            return this;
+        }
+
+        public PlayControl playAt(LoopMode loopMode, int index)
+        {
+            open(getFileAt(index)).play(loopMode);
+            return this;
+        }
+
+        public PlayControl playNext()
+        {
+            open(getNextFilePath()).play();
+            return this;
+        }
+
+        public PlayControl playPrevious()
+        {
+            open(getPreviousFilePath()).play();
+            return this;
+        }
+
+        public PlayControl pause()
         {
             status = Status.PAUSED;
             String command = "pause MediaFile";
             mciSendString(command, null, 0, handle);
+            return this;
         }
 
-        public void resume()
+        public PlayControl resume()
         {
             status = Status.PLAYING;
             String command = "resume MediaFile";
             mciSendString(command, null, 0, handle);
+            return this;
         }
 
-        public void stop()
+        public PlayControl stop()
         {
             status = Status.WAITING;
             String command = "stop MediaFile";
             mciSendString(command, null, 0, handle);
+            return this;
+        }
+
+        public PlayControl changeLoopMode(LoopMode loopMode)
+        {
+            this.loopMode = loopMode;
+            return this;
         }
 
         ////////////////Setters and getters////////////////
@@ -166,15 +223,40 @@ namespace MusicPlayer.PlayControl
 
         public Status getStatus() { return status; }
 
-        public String getPlayingFile() { return playingFile; }
+        public String getPlayingFileName() { return playingFileName; }
 
-        public void setPlaylist(String playlist)
+        public void setplaylist(String playlist)
         {
-
+            //TODO : Interpret filepath
+            onPlaylistChanged();
         }
 
-        public void setPlaylist(List<String> playlist) { this.playList = playlist.ToList(); }
+        public void setplaylist(List<String> playlist) { this.playlist = playlist.ToList(); onPlaylistChanged(); }
 
-        public List<String> getPlaylist() { return playList; }
+        public List<String> getplaylist() { return playlist; }
+
+        public String getNextFilePath()
+        {
+            return playPosition >= playlist.Count - 2 ?
+                playlist.ElementAt(0) :
+                playlist.ElementAt(playPosition + 1);
+        }
+
+        public String getPreviousFilePath()
+        {
+            return playPosition <= 1 ?
+                playlist.ElementAt(playlist.Count - 1) :
+                playlist.ElementAt(playPosition - 1);
+        }
+
+        /// <summary>
+        /// Get filename at the playlist.
+        /// </summary>
+        /// <param name="index">Index of file</param>
+        /// <returns></returns>
+        public String getFileAt(int index)
+        {
+            return playlist.ElementAt(index);
+        }
     }
 }

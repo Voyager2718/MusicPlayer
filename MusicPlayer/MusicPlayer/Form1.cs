@@ -189,7 +189,7 @@ namespace MusicPlayer
         private void filename_MouseHover(object sender, EventArgs e)
         {
             System.Windows.Forms.ToolTip toolTip1 = new System.Windows.Forms.ToolTip();
-            toolTip1.SetToolTip(filename, playControl.getPlayingFile());
+            toolTip1.SetToolTip(filename, playControl.getPlayingFileName());
             //TODO
         }
 
@@ -214,7 +214,7 @@ namespace MusicPlayer
         {
             if (++cheat >= 2)
             {
-                MessageBox.Show("v0.01.1100");
+                MessageBox.Show("v0.01.1101");
                 cheat = 0;
             }
         }
